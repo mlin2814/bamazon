@@ -1,26 +1,29 @@
+// Required Packages
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
+// Connection
 var connection = mysql.createConnection({
    host: "127.0.0.1",
    port: 3306,
-   user: "root", //Your username
-   password: "", //Your password
+   user: "root", 
+   password: "", 
    database: "bamazondb"
 })
 
+// Connection Error Default Message
 connection.connect(function(err) {
    if (err) throw err;
-   // console.log("connected as id " + connection.threadId);
-   // start();
 })
 
 var start = function() {
+  // Connects to DB and displays everything in table
   connection.query('SELECT * FROM products', function(err, res) {
        for (var i=0; i<res.length; i++){
           console.log(res[i].id + " | " + res[i].ItemName + " | " + res[i].DepartmentName + " | $" + res[i].Price + " | Quantity: " + res[i].Stock);
           console.log("-------------------------------------------------");
        }
+  // Prompts for input from the table by ID
   inquirer.prompt([
         {
         name: "choice",
@@ -33,6 +36,7 @@ var start = function() {
                   return false;}
           }
         }, 
+        // Compares amount inputted to existing amount
         {
         name: "stock",
         type: "input",
@@ -45,12 +49,14 @@ var start = function() {
           }
         }
       ]).then(function(answer){
+          // Runs query from command line to compare with table info
           var cusAmount = parseInt(answer.stock);
           var cusChoice = answer.choice;
           var cost = ((res[cusChoice - 1].Price) * cusAmount);
           var currentStock = res[cusChoice - 1].Stock;
           var cusRequest = res[cusChoice - 1].id;
           var updateStock = (currentStock - cusRequest);
+          // If/Else statement runs based on whether there is stock for the item or not, and updates accordingly
           if (currentStock > cusRequest){
             connection.query('UPDATE products SET ? WHERE ?', [
           {Stock: updateStock},
@@ -70,7 +76,6 @@ var start = function() {
           start();
           }
         })
-
 })
 }
 
