@@ -54,10 +54,9 @@ var start = function() {
           var cusChoice = answer.choice;
           var cost = ((res[cusChoice - 1].Price) * cusAmount);
           var currentStock = res[cusChoice - 1].Stock;
-          var cusRequest = res[cusChoice - 1].id;
-          var updateStock = (currentStock - cusRequest);
+          var updateStock = (currentStock - cusAmount);
           // If/Else statement runs based on whether there is stock for the item or not, and updates accordingly
-          if (currentStock > cusRequest){
+          if (currentStock > cusAmount){
             connection.query('UPDATE products SET ? WHERE ?', [
           {Stock: updateStock},
           {id: cusChoice}
